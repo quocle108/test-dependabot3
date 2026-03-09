@@ -1,0 +1,20 @@
+{
+  "name": "test-dependabot",
+  "version": "1.0.0",
+  "description": "Test project for Dependabot setup — verifies all 5 security update cases",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test/index.test.js",
+    "audit": "npm audit --audit-level=high"
+  },
+  "dependencies": {
+    "lodash": "4.17.20",
+    "axios": "1.6.0",
+    "express": "4.17.1",
+    "jsonwebtoken": "8.5.1",
+    "@ton/ton": "15.1.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

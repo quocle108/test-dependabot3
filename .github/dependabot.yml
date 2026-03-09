@@ -1,0 +1,53 @@
+# =============================================================================
+# Dependabot Configuration
+# =============================================================================
+#
+# This file tells Dependabot WHAT to monitor and HOW to create PRs.
+# Two separate blocks:
+#   1. Security updates — checks daily for CVEs, creates PRs for any fix
+#   2. Version updates — checks monthly for outdated deps, patch-only PRs
+#
+# All PRs require manual approval before merging.
+#
+# Docs: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+# =============================================================================
+
+version: 2
+updates:
+  # --- Security Updates ---
+  # Runs daily. When a CVE is found, Dependabot creates a PR to bump
+  # the vulnerable package to the first patched version.
+  # PRs are labeled "security" and assigned to reviewer for approval.
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "quocle108"
+    assignees:
+      - "quocle108"
+    labels:
+      - "dependencies"
+      - "security"
+
+  # --- Version Updates ---
+  # Runs monthly (Monday, Vietnam timezone).
+  # Only creates PRs for PATCH updates (e.g. 1.2.3 → 1.2.4).
+  # Minor and major version bumps are ignored — only security PRs
+  # can bump minor/major.
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "quocle108"
+    labels:
+      - "dependencies"
+      - "version-update"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]

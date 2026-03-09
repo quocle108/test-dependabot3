@@ -1,0 +1,72 @@
+# =============================================================================
+# Dependabot PR Notification
+# =============================================================================
+#
+# Triggers: when Dependabot opens a new PR
+#
+# Reads PR metadata (package name, versions, update type) and posts
+# a comment tagging the maintainer with the appropriate action:
+#
+#   Patch update → "approval required before merging"
+#   Minor update → "review changelog + test locally before approving"
+#   Major update → "careful review required" + breaking changes checklist
+#
+# Handles Cases 2, 3, 4 (security patch, minor, major).
+# =============================================================================
+
+name: Dependabot Notify Maintainer
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+
+    steps:
+      - name: Get Dependabot metadata
+        id: meta
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      # Case 2: Patch security update — approval required
+      - name: Notify patch (approval required)
+        if: steps.meta.outputs.update-type == 'version-update:semver-patch'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `@quocle108\n\n**Patch update** — approval required before merging.\n\n- Package: \`${{ steps.meta.outputs.dependency-names }}\`\n- Update: \`${{ steps.meta.outputs.previous-version }}\` → \`${{ steps.meta.outputs.new-version }}\`\n- Type: ${{ steps.meta.outputs.update-type }}\n\nPlease review and approve when ready.`
+            })
+
+      # Case 3: Minor security update — review + approval required
+      - name: Notify minor (approval required)
+        if: steps.meta.outputs.update-type == 'version-update:semver-minor'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `@quocle108\n\n**Minor update** — review and approval required before merging.\n\n- Package: \`${{ steps.meta.outputs.dependency-names }}\`\n- Update: \`${{ steps.meta.outputs.previous-version }}\` → \`${{ steps.meta.outputs.new-version }}\`\n- Type: ${{ steps.meta.outputs.update-type }}\n\nPlease review the changelog and test locally before approving.`
+            })
+
+      # Case 4: Major security update — careful review required
+      - name: Notify major (critical review required)
+        if: steps.meta.outputs.update-type == 'version-update:semver-major'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `@quocle108\n\n**Major update** — careful review required, likely has breaking changes.\n\n- Package: \`${{ steps.meta.outputs.dependency-names }}\`\n- Update: \`${{ steps.meta.outputs.previous-version }}\` → \`${{ steps.meta.outputs.new-version }}\`\n- Type: ${{ steps.meta.outputs.update-type }}\n\n**Checklist before merging:**\n- [ ] Read migration guide\n- [ ] Check breaking changes\n- [ ] Test locally\n- [ ] Team review if needed`
+            })
