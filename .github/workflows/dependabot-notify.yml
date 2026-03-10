@@ -20,6 +20,10 @@ on:
   pull_request:
     types: [opened]
 
+permissions:
+  pull-requests: write
+  issues: write
+
 jobs:
   notify:
     runs-on: ubuntu-latest

@@ -28,17 +28,17 @@ updates:
     groups:
       # --- Security Updates (3 groups by severity) ---
       # Case 1: Patch — auto-merge after CI passes
-      patch-updates:
+      security-patch-updates:
         applies-to: security-updates
         update-types:
           - "patch"
       # Case 2: Minor — reviewer merges manually
-      minor-updates:
+      security-minor-updates:
         applies-to: security-updates
         update-types:
           - "minor"
       # Case 3: Major — manual review + migration plan
-      major-updates:
+      security-major-updates:
         applies-to: security-updates
         update-types:
           - "major"
