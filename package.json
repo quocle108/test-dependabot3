@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "lodash": "4.17.23",
-    "axios": "1.6.0",
-    "express": "4.17.1",
+    "axios": "1.6.8",
+    "express": "4.17.3",
     "jsonwebtoken": "8.5.1",
     "bitcoinjs-message": "2.2.0"
   },
