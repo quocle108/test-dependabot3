@@ -7,6 +7,7 @@
 #   1. Security updates — checks daily for CVEs, creates PRs for any fix
 #   2. Version updates — checks monthly for outdated deps, patch-only PRs
 #
+# Groups bundle related updates into a single PR to reduce noise.
 # All PRs require manual approval before merging.
 #
 # Docs: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
@@ -30,9 +31,29 @@ updates:
     labels:
       - "dependencies"
       - "security"
+    # Group related updates into single PRs to reduce noise.
+    # Without groups, each transitive CVE gets its own PR
+    # (e.g. express alone generates 5+ PRs for qs, cookie, send, etc.)
+    groups:
+      # Case 1: Patch — auto-merge after CI passes
+      patch-updates:
+        applies-to: security-updates
+        update-types:
+          - "patch"
+      # Case 2: Minor — reviewer merges manually
+      minor-updates:
+        applies-to: security-updates
+        update-types:
+          - "minor"
+      # Case 3: Major — manual review + migration plan
+      major-updates:
+        applies-to: security-updates
+        update-types:
+          - "major"
+      # Case 4: No fix — no PR created, tracked in Security tab alerts
 
   # --- Version Updates ---
-  # Runs monthly (Monday, Vietnam timezone).
+  # Runs monthly (Monday, UTC).
   # Only creates PRs for PATCH updates (e.g. 1.2.3 → 1.2.4).
   # Minor and major version bumps are ignored — only security PRs
   # can bump minor/major.
@@ -51,3 +72,7 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
+    groups:
+      version-patch-updates:
+        update-types:
+          - "patch"
