@@ -8,7 +8,7 @@
     "audit": "npm audit --audit-level=high"
   },
   "dependencies": {
-    "lodash": "4.17.20",
+    "lodash": "4.17.23",
     "axios": "1.6.0",
     "express": "4.17.1",
     "jsonwebtoken": "8.5.1",
